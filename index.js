@@ -26,7 +26,7 @@ app.get('/webhook/', function (req, res) {
     res.send('Error, wrong token')
 })
 
-var cont = 0
+
 
 // to post data
 app.post('/webhook/', function (req, res) {
@@ -40,11 +40,11 @@ app.post('/webhook/', function (req, res) {
                 sendGenericMessage(sender)
                 continue
             }
-            sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
+            sendTextMessage(sender, "Text re \n ceived, /n echo: " + text.substring(0, 200))
         }
         if (event.postback) {
             let text = JSON.stringify(event.postback)
-            sendTextMessage(sender, "Postback received: "+event.postback.payload, token)
+            sendTextMessage(sender, "Postback received: "+ event.postback.payload + event.postback.payload2, token)
             sendGenericMessage(sender)
             continue
         }
@@ -59,8 +59,7 @@ app.post('/webhook/', function (req, res) {
 
 function sendTextMessage(sender, text) {
     let messageData = { text:text }
-    cont +=1
-    console.log(cont)
+
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {access_token:token},
@@ -96,6 +95,7 @@ function sendGenericMessage(sender) {
                         "type": "postback",
                         "title": "Postback",
                         "payload": "opcion2",
+                        "payload2": "opcion23",
                     }],
                 }, {
                     "title": "Second card",
