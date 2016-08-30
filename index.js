@@ -42,7 +42,8 @@ app.post('/webhook/', function (req, res) {
         }
         if (event.postback) {
             let text = JSON.stringify(event.postback)
-            sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
+            sendTextMessage(sender, "Postback received: "+text.substring(0, 100), token)
+            sendGenericMessage(sender)
             continue
         }
     }
@@ -91,7 +92,7 @@ function sendGenericMessage(sender) {
                     }, {
                         "type": "postback",
                         "title": "Postback",
-                        "payload": "Payload for first element in a generic bubble",
+                        "payload": "opcion2",
                     }],
                 }, {
                     "title": "Second card",
