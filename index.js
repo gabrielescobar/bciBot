@@ -23,12 +23,13 @@ app.get('/webhook', function (req, res) {
 
 // handler receiving messages
 app.post('/webhook', function (req, res) {
-    console.log(req.body);
     var events = req.body.entry[0].messaging;
-    console.log(events);
     for (i = 0; i < events.length; i++) {
         var event = events[i];
+        console.log(event.message.text);
+        console.log(event.message);
         if (event.message && event.message.text) {
+
             if (!kittenMessage(event.sender.id, event.message.text)) {
                 sendMessage(event.sender.id, {text: "Echos: " + event.message.text});
             }
