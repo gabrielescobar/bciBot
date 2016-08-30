@@ -60,6 +60,10 @@ function receivedPostback(event) {
 
 // generic function sending messages
 function sendMessage(recipientId, message) {
+
+    console.log(recipientId);
+    console.log(message);
+
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
