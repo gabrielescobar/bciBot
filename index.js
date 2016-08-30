@@ -1,126 +1,129 @@
-var express = require('express');
-var bodyParser = require('body-parser');
-var request = require('request');
-var app = express();
+'use strict'
 
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
-app.listen((process.env.PORT || 3000));
+const express = require('express')
+const bodyParser = require('body-parser')
+const request = require('request')
+const app = express()
 
-// Server frontpage
+app.set('port', (process.env.PORT || 5000))
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({extended: false}))
+
+// parse application/json
+app.use(bodyParser.json())
+
+// index
 app.get('/', function (req, res) {
-    res.send('This is TestBot Server');
-});
+    res.send('hello world i am a secret bot')
+})
 
-// Facebook Webhook
-app.get('/webhook', function (req, res) {
-    if (req.query['hub.verify_token'] === 'testbot_verify_token') {
-        res.send(req.query['hub.challenge']);
-    } else {
-        res.send('Invalid verify token');
+// for facebook verification
+app.get('/webhook/', function (req, res) {
+    if (req.query['hub.verify_token'] === 'my_voice_is_my_password_verify_me') {
+        res.send(req.query['hub.challenge'])
     }
-});
+    res.send('Error, wrong token')
+})
 
-// handler receiving messages
-app.post('/webhook', function (req, res) {
-    var events = req.body.entry[0].messaging;
-    for (i = 0; i < events.length; i++) {
-        var event = events[i];
-
+// to post data
+app.post('/webhook/', function (req, res) {
+    let messaging_events = req.body.entry[0].messaging
+    for (let i = 0; i < messaging_events.length; i++) {
+        let event = req.body.entry[0].messaging[i]
+        let sender = event.sender.id
         if (event.message && event.message.text) {
-          //  console.log(event.message.text);
-          //  console.log(event.message);
-            if (!kittenMessage(event.sender.id, event.message.text)) {
-                sendMessage(event.sender.id, {text: "Echos: " + event.message.text});
+            let text = event.message.text
+            if (text === 'Generic') {
+                sendGenericMessage(sender)
+                continue
             }
-        } else if (event.postback) {
-            receivedPostback(event);
-           // console.log("Postback received: " + JSON.stringify(event.postback));
+            sendTextMessage(sender, "Text received, echo: " + text.substring(0, 200))
+        }
+        if (event.postback) {
+            let text = JSON.stringify(event.postback)
+            sendTextMessage(sender, "Postback received: "+text.substring(0, 200), token)
+            continue
         }
     }
-    res.sendStatus(200);
-});
+    res.sendStatus(200)
+})
 
-function receivedPostback(event) {
-    var senderID = event.sender.id;
-    var recipientID = event.recipient.id;
-    var timeOfPostback = event.timestamp;
 
-    // The 'payload' param is a developer-defined field which is set in a postback
-    // button for Structured Messages.
-    var payload = event.postback.payload;
+// recommended to inject access tokens as environmental variables, e.g.
+// const token = process.env.PAGE_ACCESS_TOKEN
+const token = "<PAGE_ACCESS_TOKEN>"
 
-    console.log("Received postback for user %d and page %d with payload '%s' " +
-        "at %d", senderID, recipientID, payload, timeOfPostback);
-
-    // When a postback is called, we'll send a message back to the sender to
-    // let them know it was successful
-    sendMessage(senderID, "Postback called");
-}
-
-// generic function sending messages
-function sendMessage(recipientId, message) {
-
-    console.log(recipientId);
-    console.log(message);
+function sendTextMessage(sender, text) {
+    let messageData = { text:text }
 
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
-        qs: {access_token: process.env.PAGE_ACCESS_TOKEN},
+        qs: {access_token:token},
         method: 'POST',
         json: {
-            recipient: {id: recipientId},
-            message: message,
+            recipient: {id:sender},
+            message: messageData,
         }
     }, function(error, response, body) {
         if (error) {
-            console.log('Error sending message: ', error);
+            console.log('Error sending messages: ', error)
         } else if (response.body.error) {
-            console.log('Error: ', response.body.error);
+            console.log('Error: ', response.body.error)
         }
-    });
-};
+    })
+}
 
-// send rich message with kitten
-function kittenMessage(recipientId, text) {
-
-    text = text || "";
-    var values = text.split(' ');
-
-    if (values.length === 3 && values[0] === 'kitten') {
-        if (Number(values[1]) > 0 && Number(values[2]) > 0) {
-
-            var imageUrl = "https://placekitten.com/" + Number(values[1]) + "/" + Number(values[2]);
-
-            message = {
-                "attachment": {
-                    "type": "template",
-                    "payload": {
-                        "template_type": "generic",
-                        "elements": [{
-                            "title": "Kitten",
-                            "subtitle": "Cute kitten picture",
-                            "image_url": imageUrl ,
-                            "buttons": [{
-                                "type": "web_url",
-                                "url": imageUrl,
-                                "title": "Show kitten"
-                            }, {
-                                "type": "postback",
-                                "title": "I like this",
-                                "payload": "User " + recipientId + " likes kitten " + imageUrl,
-                            }]
-                        }]
-                    }
-                }
-            };
-
-            sendMessage(recipientId, message);
-
-            return true;
+function sendGenericMessage(sender) {
+    let messageData = {
+        "attachment": {
+            "type": "template",
+            "payload": {
+                "template_type": "generic",
+                "elements": [{
+                    "title": "First card",
+                    "subtitle": "Element #1 of an hscroll",
+                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
+                    "buttons": [{
+                        "type": "web_url",
+                        "url": "https://www.messenger.com",
+                        "title": "web url"
+                    }, {
+                        "type": "postback",
+                        "title": "Postback",
+                        "payload": "Payload for first element in a generic bubble",
+                    }],
+                }, {
+                    "title": "Second card",
+                    "subtitle": "Element #2 of an hscroll",
+                    "image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
+                    "buttons": [{
+                        "type": "postback",
+                        "title": "Postback",
+                        "payload": "Payload for second element in a generic bubble",
+                    }],
+                }]
+            }
         }
     }
+    request({
+        url: 'https://graph.facebook.com/v2.6/me/messages',
+        qs: {access_token:token},
+        method: 'POST',
+        json: {
+            recipient: {id:sender},
+            message: messageData,
+        }
+    }, function(error, response, body) {
+        if (error) {
+            console.log('Error sending messages: ', error)
+        } else if (response.body.error) {
+            console.log('Error: ', response.body.error)
+        }
+    })
+}
 
-    return false;
-
-};
+// spin spin sugar
+app.listen(app.get('port'), function() {
+    console.log('running on port', app.get('port'))
+})
