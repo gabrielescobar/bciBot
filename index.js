@@ -28,17 +28,35 @@ app.post('/webhook', function (req, res) {
         var event = events[i];
 
         if (event.message && event.message.text) {
-            console.log(event.message.text);
-            console.log(event.message);
+          //  console.log(event.message.text);
+          //  console.log(event.message);
             if (!kittenMessage(event.sender.id, event.message.text)) {
                 sendMessage(event.sender.id, {text: "Echos: " + event.message.text});
             }
         } else if (event.postback) {
-            console.log("Postback received: " + JSON.stringify(event.postback));
+            receivedPostback(event);
+           // console.log("Postback received: " + JSON.stringify(event.postback));
         }
     }
     res.sendStatus(200);
 });
+
+function receivedPostback(event) {
+    var senderID = event.sender.id;
+    var recipientID = event.recipient.id;
+    var timeOfPostback = event.timestamp;
+
+    // The 'payload' param is a developer-defined field which is set in a postback
+    // button for Structured Messages.
+    var payload = event.postback.payload;
+
+    console.log("Received postback for user %d and page %d with payload '%s' " +
+        "at %d", senderID, recipientID, payload, timeOfPostback);
+
+    // When a postback is called, we'll send a message back to the sender to
+    // let them know it was successful
+    sendMessage(senderID, "Postback called");
+}
 
 // generic function sending messages
 function sendMessage(recipientId, message) {
