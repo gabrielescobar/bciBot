@@ -26,6 +26,8 @@ app.get('/webhook/', function (req, res) {
     res.send('Error, wrong token')
 })
 
+var cont = 0
+
 // to post data
 app.post('/webhook/', function (req, res) {
     let messaging_events = req.body.entry[0].messaging
@@ -57,7 +59,8 @@ app.post('/webhook/', function (req, res) {
 
 function sendTextMessage(sender, text) {
     let messageData = { text:text }
-
+    cont +=1
+    console.log(cont)
     request({
         url: 'https://graph.facebook.com/v2.6/me/messages',
         qs: {access_token:token},
