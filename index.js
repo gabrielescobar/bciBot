@@ -38,15 +38,16 @@ app.post('/webhook/', function (req, res) {
         let sender = event.sender.id
         if (event.message && event.message.text) {
             let text = event.message.text
-            if (text === 'Generic') {
+            if (text.toUpperCase() === 'INICIAR') {
                 sendGenericMessage(sender)
                 continue
             }
-            sendTextMessage(sender, "Text re \n ceived, /n echo: " + text.substring(0, 200))
+          //  sendTextMessage(sender, "Text re \n ceived, /n echo: " + text.substring(0, 200))
+            sendTextMessage(sender, "Bienvenido a bci Seguros asistente virtual, para empezar debes responder 'Iniciar'")
         }
         if (event.postback) {
             let text = JSON.stringify(event.postback)
-            sendTextMessage(sender, "Excelente! ahora para comenzar a cotizar tu auto"+ event.postback.payload + "escribenos la patente de tu auto", token)
+            sendTextMessage(sender, "Excelente! ahora para comenzar a cotizar tu auto "+ event.postback.payload + " escribenos la patente de tu auto", token)
            // sendGenericMessage(sender)
             continue
         }
@@ -113,19 +114,22 @@ function sendGenericMessage(sender) {
                     "title": "Bienvenido a Bci Seguros",
                     "subtitle": "Asistente Virtual",
                     "image_url": "http://login.mproliquidadores.cl/web/pics/ico_bci.png",
-                    "buttons": [{
-                        "type": "web_url",
-                        "url": "https://www.messenger.com",
-                        "title": "Ir a página web"
-                    }, {
+                    "buttons": [
+                        {
                         "type": "postback",
                         "title": "Cotizar Auto Nuevo",
                         "payload": "nuevo",
-                    }, {
+                        },
+                        {
                         "type": "postback",
                         "title": "Cotizar Auto Usado",
-                        "payload": "Usado",
-                    }
+                        "payload": "usado",
+                        },
+                        {
+                            "type": "web_url",
+                            "url": "https://www.messenger.com",
+                            "title": "Ir a página web"
+                        }
                     ],
 
                 }]
