@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
 
-
+var TotalArray = [];
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -46,12 +46,36 @@ app.post('/webhook/', function (req, res) {
         }
         if (event.postback) {
             let text = JSON.stringify(event.postback)
-            sendTextMessage(sender, "Postback received: "+ event.postback.payload + event.postback.payload2, token)
+            sendTextMessage(sender, "Postback received: "+ event.postback.payload, token)
             sendGenericMessage(sender)
             continue
         }
     }
     res.sendStatus(200)
+})
+
+app.post('/test/', function (req, res) {
+    /*
+    * {
+    * 'id' : '123',
+    * 'nombre': 'gabriel'
+    * }
+    * */
+    var arrayLength = TotalArray.length;
+    var found = false;
+    for (var i = 0; i < arrayLength; i++) {
+        if (TotalArray[i].id == req.body.id){
+            TotalArray[i].nombre = req.body.nombre;
+             found = true;
+        }
+    }
+    if (!found){
+        TotalArray.push({
+            "id": req.body.id,
+            "nombre": req.body.nombre
+        })
+    }
+console.log(TotalArray);
 })
 
 
@@ -86,26 +110,17 @@ function sendGenericMessage(sender) {
             "payload": {
                 "template_type": "generic",
                 "elements": [{
-                    "title": "First card",
-                    "subtitle": "Element #1 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/rift.png",
+                    "title": "Bienvenido a Bci Seguros",
+                    "subtitle": "Asistente Virtual",
+                    "image_url": "LogoBciSeguros.png",
                     "buttons": [{
                         "type": "web_url",
                         "url": "https://www.messenger.com",
-                        "title": "web url"
+                        "title": "Ir a página web"
                     }, {
                         "type": "postback",
-                        "title": "Postback",
-                        "payload": "opcion2",
-                    }],
-                }, {
-                    "title": "Second card",
-                    "subtitle": "Element #2 of an hscroll",
-                    "image_url": "http://messengerdemo.parseapp.com/img/gearvr.png",
-                    "buttons": [{
-                        "type": "postback",
-                        "title": "Postback",
-                        "payload": "Payload for second element in a generic bubble",
+                        "title": "Cotizar Seguro",
+                        "payload": "opcion",
                     }],
                 }]
             }
