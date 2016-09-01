@@ -112,7 +112,7 @@ function sendGenericMessage(sender) {
                 "elements": [{
                     "title": "Bienvenido a Bci Seguros",
                     "subtitle": "Asistente Virtual",
-                    "image_url": "LogoBciSeguros.png",
+                    "image_url": "https://www.bciseguros.cl/medios/imagenesCompartidas/LogoBciSeguros.png",
                     "buttons": [{
                         "type": "web_url",
                         "url": "https://www.messenger.com",
