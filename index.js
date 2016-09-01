@@ -47,7 +47,7 @@ app.post('/webhook/', function (req, res) {
         }
         if (event.postback) {
             let text = JSON.stringify(event.postback)
-            sendTextMessage(sender, "Excelente! ahora para comenzar a cotizar tu auto "+ event.postback.payload + " escribenos la patente de tu auto", token)
+            sendTextMessage(sender, "Para comenzar a cotizar tu auto "+ event.postback.payload + " escribe 'Patente' seguido de tu numero de patente ejm 'patente 123456' ", token)
            // sendGenericMessage(sender)
             continue
         }
