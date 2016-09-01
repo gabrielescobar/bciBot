@@ -6,6 +6,7 @@ const request = require('request')
 const app = express()
 const redis = require("redis")
 
+var client = redis.createClient();
 client.on("error", function (err) {
     console.log("Error " + err);
 });
