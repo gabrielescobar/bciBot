@@ -4,6 +4,11 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
+const redis = require("redis")
+
+client.on("error", function (err) {
+    console.log("Error " + err);
+});
 
 app.set('port', (process.env.PORT || 5000))
 
@@ -95,7 +100,6 @@ function sendGenericMessage(sender) {
                         "type": "postback",
                         "title": "Postback",
                         "payload": "opcion2",
-                        "payload2": "opcion23",
                     }],
                 }, {
                     "title": "Second card",
