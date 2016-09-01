@@ -4,12 +4,7 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const request = require('request')
 const app = express()
-const redis = require("redis")
 
-var client = redis.createClient();
-client.on("error", function (err) {
-    console.log("Error " + err);
-});
 
 app.set('port', (process.env.PORT || 5000))
 
