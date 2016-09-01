@@ -46,8 +46,8 @@ app.post('/webhook/', function (req, res) {
         }
         if (event.postback) {
             let text = JSON.stringify(event.postback)
-            sendTextMessage(sender, "Postback received: "+ event.postback.payload, token)
-            sendGenericMessage(sender)
+            sendTextMessage(sender, "Excelente! ahora para comenzar a cotizar tu auto"+ event.postback.payload + "escribenos la patente de tu auto", token)
+           // sendGenericMessage(sender)
             continue
         }
     }
@@ -119,9 +119,15 @@ function sendGenericMessage(sender) {
                         "title": "Ir a página web"
                     }, {
                         "type": "postback",
-                        "title": "Cotizar Seguro",
-                        "payload": "opcion",
-                    }],
+                        "title": "Cotizar Auto Nuevo",
+                        "payload": "nuevo",
+                    }, {
+                        "type": "postback",
+                        "title": "Cotizar Auto Usado",
+                        "payload": "Usado",
+                    }
+                    ],
+
                 }]
             }
         }
